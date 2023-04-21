@@ -28,7 +28,10 @@
  6. 의미구조(Vector, Matrix) 생성 - Embedding
     - 통계 기반, 추론 기반 시스템
     - 벡터 행렬로 변경
+<div style="text-align: right">
 
+[목차](#목차)
+</div>
 ---
 
 ## 2. 토큰화
@@ -184,7 +187,10 @@
     ['you', 'are', 'using', 'pip', 'version', '3', '.'],
     ['could', 'not', 'install', 'packages', 'due', 'to', 'an', 'error', '.']]
     ```
+<div style="text-align: right">
 
+[목차](#목차)
+</div>
 ---
 
 ## 3. 문장 토큰화
@@ -231,7 +237,10 @@
     ['Could', 'not', 'install', 'packages', 'due', 'to', 'an', 'Error', '.']]
     ```
     </details>
+<div style="text-align: right">
 
+[목차](#목차)
+</div>
 ---
 
 ## 4. 단어 임베딩
@@ -391,7 +400,10 @@
     print(id_to_word)
     ```
     </details>
+<div style="text-align: right">
 
+[목차](#목차)
+</div>
 ---
 
 ## 5. 원핫벡터(one-hot-vector)
@@ -439,6 +451,10 @@
     - 위치를 이용해 id-to-word으로 단어로 변경
     - 전부 찾아서 문장으로 반환
 
+<div style="text-align: right">
+
+[목차](#목차)
+</div>
 ---
 
 ## 6. 이진 벡터 
@@ -485,7 +501,10 @@
     - 특성
     - 문서의 정규화 효과
     - 다차원 양수공간 벡터 유사도 계산
+<div style="text-align: right">
 
+[목차](#목차)
+</div>
 
 ---
 ## 8. 사이킷런 활용
@@ -567,9 +586,14 @@
     print(sorted(tfidf.vocabulary_.items()))
     ```
     </details>
-    - TF 계산 : 빈도수 카운트. 우리가 수업에서 만든 코드는 로그를 취함
-    - IDF 계산 : 스무딩을 수행할 경우, 전체 문서수(N)+1, 단어출현 문서수(DF)+1을 해서 로그값을 취하며, 그 결과에 1을 더함으로 최종 IDF 값을 취함
-    - L2 정규화를 진행함 → 벡터 요소의 제곱합이 1이 되도록 정규화 → 벡터 유사도 계산 시 벡터의 크기를 정규화 해야 한다.
-    - 로그 : 수업에서는 밑이 2인 로그를 취했으나, 패키지에서는 np.log()를 취함. np.log()는 자연로그임.
+- TF 계산 : 빈도수 카운트. 우리가 수업에서 만든 코드는 로그를 취함   
+- IDF 계산 : 스무딩을 수행할 경우, 전체 문서수(N)+1, 단어출현 문서수(DF)+1을 해서 로그값을 취하며, 그 결과에 1을 더함으로 최종 IDF 값을 취함
+- L2 정규화를 진행함 → 벡터 요소의 제곱합이 1이 되도록 정규화 → 벡터 유사도 계산 시 벡터의 크기를 정규화 해야 한다.
+- 로그 : 수업에서는 밑이 2인 로그를 취했으나, 패키지에서는 np.log()를 취함. np.log()는 자연로그임. 
+
+<div style="text-align: right">
+
+[목차](#목차)
+</div>
 
 ---
