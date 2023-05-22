@@ -1,22 +1,29 @@
 # **Text-Processing**
 
 ## **목차**
-- 중간
-1. [텍스트 처리의 단계](#1-텍스트-처리의-단계)
-2. [토큰화](#2-토큰화)
-3. [문장 토큰화](#3-문장-토큰화)
-4. [단어 임베딩](#4-단어-임베딩)
-5. [원핫 벡터](#5-원핫벡터one-hot-vector)
-6. [이진벡터](#6-이진-벡터)
-7. [TF-IDF벡터/코사인 유사도/정규화](#7-tf-idf-벡터)
-8. [사이킷런](#8-사이킷런-활용)
-- 기말
-9. [정규표현식](#9-정규표현식regular-expression)
-10. [형태소 분석](#10-형태소-분석)
+- <details><summary>중간</summary>
+
+    1. [텍스트 처리의 단계](#1-텍스트-처리의-단계)
+    2. [토큰화](#2-토큰화)
+    3. [문장 토큰화](#3-문장-토큰화)
+    4. [단어 임베딩](#4-단어-임베딩)
+    5. [원핫 벡터](#5-원핫벡터one-hot-vector)
+    6. [이진벡터](#6-이진-벡터)
+    7. [TF-IDF벡터/코사인 유사도/정규화](#7-tf-idf-벡터)
+    8. [사이킷런](#8-사이킷런-활용)
+    </details>
+- <details><summary>기말</summary>
+
+    9. [정규표현식](#9-정규표현식regular-expression)
+    10. [형태소 분석](#10-형태소-분석)
+    11. [동시발생행렬](#11-동시발생행렬)
+    </details>
 
 ---
 
 ## 1. 텍스트 처리의 단계
+<details>
+
  1. 텍스트 데이터 수집 
     - 자료수집 -> txt, cell, csv 저장
  2. 문자열 토큰화
@@ -32,6 +39,7 @@
  6. 의미구조(Vector, Matrix) 생성 - Embedding
     - 통계 기반, 추론 기반 시스템
     - 벡터 행렬로 변경
+</details>
 <div style="text-align: right">
 
 [목차](#목차)
@@ -40,6 +48,8 @@
 ---
 
 ## 2. 토큰화
+
+<details>
 
 ### 분할(Segmentation)
 - 정해진 기준으로 하위 개념 정보로 데이터를 분할
@@ -192,6 +202,9 @@
     ['you', 'are', 'using', 'pip', 'version', '3', '.'],
     ['could', 'not', 'install', 'packages', 'due', 'to', 'an', 'error', '.']]
     ```
+
+</details>
+
 <div style="text-align: right">
 
 [목차](#목차)
@@ -200,6 +213,9 @@
 ---
 
 ## 3. 문장 토큰화
+
+<details>
+
 1. ### 출력
     <details>
     <summary>위의 실습을 출력</summary>
@@ -243,13 +259,20 @@
     ['Could', 'not', 'install', 'packages', 'due', 'to', 'an', 'Error', '.']]
     ```
     </details>
-    <div style="text-align: right">
 
-    [목차](#목차)
-    </div>
+</details>
+
+<div style="text-align: right">
+
+[목차](#목차)
+</div>
+
 ---
 
 ## 4. 단어 임베딩
+
+<details>
+
 <img src="https://ivy-hospital-413.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F53b94b0e-e2d7-46d2-86c2-fe60e1f39f80%2F%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2021-07-29_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_4.23.19.png?id=ce63509f-987b-4a65-a4b6-118ff6d81c0e&table=block&spaceId=4df7c095-f16c-49b1-9f2e-58f72fb09349&width=1230&userId=&cache=v2"></img>
 
 1. ### 사전 구축
@@ -406,6 +429,9 @@
     print(id_to_word)
     ```
     </details>
+
+</details>
+
 <div style="text-align: right">
 
 [목차](#목차)
@@ -414,6 +440,9 @@
 ---
 
 ## 5. 원핫벡터(one-hot-vector)
+
+<details>
+
 - 1차원 배열의 저장 형태로써 배열 내 원소 중 정답을 뜻하는 원소 하나만 1이고 나머지 모든 원소는 0인 배열을 의미
     <details><summary>코드</summary>
 
@@ -454,10 +483,27 @@
         - 사전 크기만큼 0이 들어간 원핫 벡터 리스트 생성
         - 요소 위치의 0의 자리에 1을 대신 삽입
         - 한줄씩 벡터 추가
+
 - 원-핫 벡터에서 원문 복구
     - 벡터마다 1의 위치 검색
     - 위치를 이용해 id-to-word으로 단어로 변경
     - 전부 찾아서 문장으로 반환
+
+- 형태 
+    - 가로 : 단어 사전
+    - 세로 : 단어 순서
+
+    ||W1|W2|W3|. . .|Wn|
+    |--|--|--|--|--|--|
+    |I1|1|0|0|. . .|0|
+    |I2|0|0|1|. . .|0|
+    |I3|0|1|0|. . .|0|
+    |.<br>.<br>.|.<br>.<br>.|.<br>.<br>.|.<br>.<br>.|.<br>&nbsp;&nbsp;&nbsp;.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.|.<br>.<br>.|
+    |Ix|0|0|0|. . .|1|
+
+    예시는 W1 W3 W2 ... Wn 을 나타냄
+
+</details>
 
 <div style="text-align: right">
 
@@ -467,6 +513,9 @@
 ---
 
 ## 6. 이진 벡터 
+
+<details>
+
 - 문서당 이진 벡터 1개 
 - 사전에 있는 단어만을 1로 표시
 - 문서에 단어가 출현 했는지만을 확인하는 용도
@@ -480,24 +529,48 @@
 5. 색인어에 해당하는 문서 벡터내 문서 랭킹(검색순위 결정)
 6. 해시테이블, BTree 등의 자료구조로 역 인덱스 구축
 
+
+</details>
+
+<div style="text-align: right">
+
+[목차](#목차)
+</div>
+
 ---
 
 ## 7. TF-IDF 벡터
+
+<details>
+
 - TF : 용어 빈도수(Term Frequency)
     - 문서(d)에 나타난 단어(t)의 빈도수
     - 위 수의 log값 + 1 = TF, 단어가 없으면 이면 0
     - 의미 : 여러번 나오는 단어는 중요함 (문서별 계산)
+    
 - IDF : 역문헌 빈도수(Inverse Document Frequency)
     - Zipf의 법칙
         - k번째 많은 단어의 빈도수는 가장 많이 출현한 단어 빈도수의 1/k에 근접
         - 즉 최대 1000회 출현 단어가 존재 시, 4번째 많이 출현하는 단어는 250에 근접
     - log (전체 문헌 수 / 특정 단어가 출현한 문헌 수) = IDF
     - 의미 : 많은 문서에서 나올 경우 중요하지 않음(여러 문서집합으로 한번 계산)
+
 - TF - IDF : TF × IDF
+    - 형태
+
+        ||T1|T2|T3|. . .|Tn|
+        |--|--|--|--|--|--|
+        |D1|w(1-1)|w(1-2)|w(1-3)|. . .|w(1-n)|
+        |D2|w(2-1)|w(2-2)|w(2-3)|. . .|w(2-n)|
+        |D3|w(3-1)|w(3-2)|w(3-3)|. . .|w(3-n)|
+        |.<br>.<br>.|.<br>.<br>.|.<br>.<br>.|.<br>.<br>.|.<br>&nbsp;&nbsp;&nbsp;.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.|.<br>.<br>.|
+        |Dn|w(n-1)|w(n-2)|w(n-3)|. . .|w(n-n)|
+
 - 활용 
     - 키워드 추출
     - 순위 결정
     - 유사도 측정
+
 - 벡터 정규화
     - 큰 문서일 수록 가중치가 올라감
     - 문서 크기 표준화 필요
@@ -507,10 +580,14 @@
     - 코사인 유사도
         - A · B = ∥A∥ ∥B∥ cosθ
         - cosθ = (A · B)/(∥A∥ ∥B∥) = √Σ(A×B) / (√ΣA² · √ΣB²)
+
 - 코사인 유사도
     - 특성
     - 문서의 정규화 효과
     - 다차원 양수공간 벡터 유사도 계산
+
+
+</details>
 
 <div style="text-align: right">
 
@@ -520,6 +597,9 @@
 ---
 
 ## 8. 사이킷런 활용
+
+<details>
+
 [scikit_learn.org](https://scikit-learn.org/stable/)
 1. 원핫 벡터
     1. LabelEncoder의 fit_transform 함수를 사용해 사전의 단어들을 레이블링
@@ -603,14 +683,20 @@
 - L2 정규화를 진행함 → 벡터 요소의 제곱합이 1이 되도록 정규화 → 벡터 유사도 계산 시 벡터의 크기를 정규화 해야 한다.
 - 로그 : 수업에서는 밑이 2인 로그를 취했으나, 패키지에서는 np.log()를 취함. np.log()는 자연로그임. 
 
+</details>
+
 <div style="text-align: right">
 
 [목차](#목차)
 </div>
 
 ---
+---
 
 ## 9. 정규표현식(Regular Expression)
+
+<details>
+
 - 특정 문자의 집합 또는 문자열을 기호식으로 바꾸어 놓는 방법
     - 문자열 집합을 정확하게 표현하기 위해 사용하는 규칙
 
@@ -754,7 +840,7 @@ express : ^\(0.+9\)$
 - 시작이 0 하나 이상의 문자와 끝이 9
 - 시작 끝 패턴을 명확히 지정할때 사용
 
-
+</details>
 
 <div style="text-align: right">
 
@@ -764,6 +850,8 @@ express : ^\(0.+9\)$
 ---
 
 ## 10. 형태소 분석
+
+<details>
 
 - 형태소 : 언어에서 의미를 가지는 가장 작은 단위
 
@@ -785,6 +873,326 @@ express : ^\(0.+9\)$
     - 이러한 요소가 검색엔진, 자연어 처리 시스템 구현에 큰 한계
 
 - 형태소 분석의 목적 = 색인작업
+
+- Konlpy 사용
+
+     ```python
+    !curl -s https://raw.githubusercontent.com/teddylee777/machine-learning/master/99-Misc/01-Colab/mecab-colab.sh | bash
+    ```
+
+    - 사용 예시
+        ```python
+        from konlpy.tag import Okt, Mecab
+        okt = Okt()
+        okt.morphs('형태소 분석할 Text 입력')
+        ```
+
+
+    <details> 
+    <summary>Konlpy 안의 형태소</summary>
+
+    - Hannaum : KASIT
+    - Kkma : 서울대
+    - Komoran : Shineware
+    - Mecab : 일본어용을 한국어 사용가능하게 수정
+    - Open Korean Text : 과거 트위터 형태소 분석기
+    </details>
+
+- TF/IDF 적용
+    - <details><summary>TF/IDF 벡터 생성</summary>
+
+        ```python
+        docs = doc.split('\n')
+        r = []
+        for line in docs:
+            token = mecab.morphs(line)
+            txt = " ".join(token)
+            r.append(txt)
+
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        #tfidf 벡터 메트릭스 생성
+        tfidf = TfidfVectorizer()
+        tfidf_matrix = tfidf.fit_transform(r)
+        print('type of tfidf_matrix {}'.format(type(tfidf_matrix)))
+        print('shape of tfidf_matrix {}'.format(tfidf_matrix.shape))
+        
+        ##출력결과
+        type of tfidf_matrix <class 'scipy.sparse.csr.csr_matrix'>
+        shape of tfidf_matrix (357, 1081)
+        ```
+        </details>
+
+    - <details><summary>각 문서별 TF/IDF 값이 높은 단어 추출</summary>
+
+        ```python
+        tfidf_table = tfidf_matrix.toarray()
+        keywords = []
+
+        for weight in tfidf_table:
+            w_vec = list(enumerate(weight))
+            w_vec = sorted(w_vec, key=lambda x : x[1], reverse=True)
+            print(w_vec[:3])
+            keywords.append(w_vec)
+
+        #출력결과
+        [(361, 0.8233074079998407), (1049, 0.5675957293114385), (0, 0.0)]
+        [(0, 0.0), (1, 0.0), (2, 0.0)]
+        [(664, 0.297683329858021), (412, 0.2253201732864864), (483, 0.19845555323868067)]
+        [(0, 0.0), (1, 0.0), (2, 0.0)]
+        [(949, 1.0), (0, 0.0), (1, 0.0)]
+        [(215, 0.6937741027461318), (412, 0.5251261504196152), (361, 0.492869171793363)]
+        ```
+        </details>
+
+    - <details><summary>전체 문서 중 가장 TF/IDF가 높은 문서 추출</summary>
+
+        ```python
+        import numpy as np
+        def tfidf_rank(tfidf_matrix):
+            rank = []
+            avg, stddev = 0.0, 0.0
+            
+            #문서 별 tfidf 가중치의 합 계산 : (문서id, 가중치 합)
+            for idx, tfidf in enumerate(tfidf_matrix):
+                rank.append((idx, tfidf.sum()))
+
+            #가중치의 합이 높은 문서 순으로 정렬
+            rank.sort(key=lambda x : x[1], reverse=True)
+
+            #tfidf의 평균과 표준편차 계산
+            tfidf_sum = [tfidf.sum() for tfidf in tfidf_matrix]
+            avg = np.mean(tfidf_sum)
+            stddev = np.std(tfidf_sum)
+            return rank, avg, stddev
+            
+        rank, avg, stddev = tfidf_rank(tfidf_matrix)
+
+        print(rank[:2])
+        print('avg = {}, stddev = {}'.format(avg, stddev))
+
+        #랭크가 높은 문서 5개의 원문을 추출하여 rank_doc에 저장 후 출력
+        rank_doc = [docs[doc_id[0]] for doc_id in rank[:5]]
+        rank_doc
+
+        #출력결과
+        [(2, 8.937515671877552), (181, 5.81765311803503)]
+        avg = 2.949446365690751, stddev = 1.043877787780237
+        
+        ['유구한 역사와 전통에 빛나는 우리 대한국민은 3·1운동으로 건립된...'
+        ' 제76조 ① 대통령은 내우·외환·천재·지변 또는 중대한 재정·경제상의...'
+        '③체포·구속·압수 또는 수색을 할 때에는 적법한 절차에 따라 검사의...'
+        '⑦피고인의 자백이 고문·폭행·협박·구속의 부당한 장기화 또는 기망 기타의...'
+        ' 제65조 ① 대통령·국무총리·국무위원·행정각부의 장·헌법재판소...'
+        ```
+        </details>
+    
+
+</details>
+
+<div style="text-align: right">
+
+[목차](#목차)
+</div>
+
+---
+
+
+## 11. 동시발생행렬
+
+<!-- <details> -->
+
+- 단어의 분산 표현
+    - 통계기반
+        - 단어 출현 획구에 기반한 처리
+        - 의미 파악 불가
+        - 희소벡터(TF/IDF)
+    - 추론기반
+        - 주변 단어와 관계에 기반한 처리
+        - 의미 추론 가능
+        - 밀집벡터
+
+- 맥락
+    - 정의 : 사물 따위가 서로 이어져 있는 관계나 연관성
+    - all the facts, opinions, etc. relating to a particular thing or event
+
+    - 표현
+        -  동시발생행렬
+        - 특정 단어의 주변에 나타나는 단어의 횟수를 기록하는 간단한 방법
+    
+    - 예문 : **you say goodbye and i say hello**
+        - ||you|say|goodbye|and|i|hello|.|
+            |--|--|--|--|--|--|--|--|
+            |you|0|1|0|0|0|0|0|
+            |say|1|0|1|0|1|1|0|      
+            |goodbye|0|1|0|1|0|0|0|     
+            |andsay|0|0|1|0|1|0|0|     
+            |i|0|1|0|1|0|0|0|    
+            |hello|0|1|0|0|0|0|1|        
+            |.|0|0|0|0|0|1|0|   
+        
+        <details><summary>동시발생행렬 코드</summary>
+        
+        ```python
+        def create_co_matrix(corpus, vocab_size, window_size=1):
+            '''동시발생 행렬 생성
+            :param corpus: 말뭉치(단어 ID 목록)
+            :param vocab_size: 어휘 수
+            :param window_size: 윈도우 크기(윈도우 크기가 1이면 타깃 단어 좌우 한 단어씩이 맥락에 포함)
+            :return: 동시발생 행렬
+            '''
+            corpus_size = len(corpus)
+            co_matrix = np.zeros((vocab_size, vocab_size), dtype=np.int32)
+
+            for idx, word_id in enumerate(corpus):
+                for i in range(1, window_size + 1):
+                    left_idx = idx - i
+                    right_idx = idx + i
+                    
+                    #기준 단어의 왼쪽 값 추가
+                    if left_idx >= 0:
+                        left_word_id = corpus[left_idx]
+                        co_matrix[word_id, left_word_id] += 1
+
+                    #기준 단어에 오른쪽 값 추가
+                    if right_idx < corpus_size:
+                        right_word_id = corpus[right_idx]
+                        co_matrix[word_id, right_word_id] += 1
+
+            return co_matrix
+
+        co_matrix = create_co_matrix(corpus, len(corpus))
+        co_matrix
+
+        #출력결과
+        array([[0, 1, 0, 0, 0, 0, 0, 0],
+            [1, 0, 1, 0, 1, 1, 0, 0],
+            [0, 1, 0, 1, 0, 0, 0, 0],
+            [0, 0, 1, 0, 1, 0, 0, 0],
+            [0, 1, 0, 1, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0]], dtype=int32)
+        ```
+        </details>
+
+        <details><summary>동시발생행렬 활용 코드</summary>
+        
+        코사인 유사도
+        ```python
+        import pandas as pd
+
+        from sklearn.metrics.pairwise import cosine_similarity
+        from sklearn.metrics.pairwise import linear_kernel
+
+        cos_sim = cosine_similarity(co_matrix, co_matrix)
+        pd.DataFrame(cos_sim, columns=word_to_id.keys())
+
+        #출력결과
+                    you	     say	 goodbye	     and	       i	   hello	  .
+        0	1.000000	0.000000	0.707107	0.000000	0.707107	0.707107	0.0
+        1	0.000000	1.000000	0.000000	0.707107	0.000000	0.000000	0.5
+        2	0.707107	0.000000	1.000000	0.000000	1.000000	0.500000	0.0
+        3	0.000000	0.707107	0.000000	1.000000	0.000000	0.000000	0.0
+        4	0.707107	0.000000	1.000000	0.000000	1.000000	0.500000	0.0
+        5	0.707107	0.000000	0.500000	0.000000	0.500000	1.000000	0.0
+        6	0.000000	0.500000	0.000000	0.000000	0.000000	0.000000	1.0
+        ```
+        입력 쿼리와 유사도가 높은 단어 반환
+        ```python
+        def most_similar(query, word_to_id, id_to_word, word_matrix, top=3):
+
+            if query not in word_to_id:
+                print('{}를 찾을 수 없음.'.format(query))
+                return
+                
+            word_vector = np.array(word_matrix[word_to_id[query]])
+            word_vector = word_vector.reshape(1, -1)
+
+            sim = cosine_similarity(word_vector, word_matrix)
+            sim = sim[0]
+            sim = [(id, cos) for id, cos in enumerate(sim)]
+            sim = sorted(sim, key=lambda x: x[1], reverse=True)
+
+            return sim[1:top+1]
+
+        rank = most_similar('you', word_to_id, id_to_word, co_matrix)
+        for r in rank:
+            print(id_to_word[r[0]], r[1])
+        ```
+        </details>
+
+- 점별 상호 정보량 처리
+     - $PMI(x,y) = log_2\frac{P(x,y)}{P(x)P(y)}=log_2\frac{\frac{n(x,y)}{N}}{\frac{n_x}{N}\frac{n_y}{N}} = log_2\frac{n(x,y)N}{n_xn_y}$
+     - 전체 동시출현 횟수가 10,000회라고 할 때, 다음과 같은 발생 횟수를 나타낸다고 가정할 때
+        1. the : 1,000회
+        2. car : 20회
+        3. drive : 10회
+        4. the, car 동시발생 : 10회
+        5. car, drive 동시발생 : 5회
+
+        - $PMI(the,car) = log_2\frac{10\cdot10000}{1000\cdot20}=log_2\frac{10}{2}\approx2.32$
+        - $PMI(car,drive) = log_2\frac{5\cdot10000}{20\cdot10}=log_2 250\approx7.97$
+            - the같은 고빈도 단어 출현 시 분모값 증가, 전체값 감소
+            - 출현 빈도 없을 시 $log_20=-\infty$가 되므로 양의 값만 가지는 함수 필요
+            - $PPMI(x,y) = max(0,PMI(x,y))$
+            - <details><summary>코드</summary>
+            ```python
+            def ppmi(C, verbose=False, eps = 1e-8):
+                '''PPMI(점별 상호정보량) 생성
+                :param C: 동시발생 행렬
+                :param verbose: 진행 상황을 출력할지 여부
+                :return:
+                '''
+                M = np.zeros_like(C, dtype=np.float32)
+                N = np.sum(C)
+                S = np.sum(C, axis=0)
+                    total = C.shape[0]*C.shape[1]
+                    cnt = 0
+                print('N = {}, S = {}'.format(N, S))
+
+                for i in range(C.shape[0]):
+                    for j in range(C.shape[1]):
+                        pmi = np.log2(C[i, j] * N / (S[j]*S[i]) + eps) #PMI 계산
+                        M[i, j] = max(0, pmi) #Positive
+
+                        if verbose: #진행상황
+                            cnt += 1
+                            if cnt % (total//100 + 1) == 0:
+                                print('%.1f%% 완료' % (100*cnt/total))
+                return M
+
+            W = ppmi(co_matrix)
+
+            np.set_printoptions(precision=3)  # 유효 자릿수를 세 자리로 표시
+            print('동시발생 행렬')
+            print(co_matrix)
+            print('-'*50)
+            print('PPMI')
+            print(W)
+
+            #출력결과
+            N = 14, S = [1 4 2 2 2 2 1]
+            동시발생 행렬
+            [[0 1 0 0 0 0 0]
+            [1 0 1 0 1 1 0]
+            [0 1 0 1 0 0 0]
+            [0 0 1 0 1 0 0]
+            [0 1 0 1 0 0 0]
+            [0 1 0 0 0 0 1]
+            [0 0 0 0 0 1 0]]
+            --------------------------------------------------
+            PPMI
+            [[0.    1.807 0.    0.    0.    0.    0.   ]
+            [1.807 0.    0.807 0.    0.807 0.807 0.   ]
+            [0.    0.807 0.    1.807 0.    0.    0.   ]
+            [0.    0.    1.807 0.    1.807 0.    0.   ]
+            [0.    0.807 0.    1.807 0.    0.    0.   ]
+            [0.    0.807 0.    0.    0.    0.    2.807]
+            [0.    0.    0.    0.    0.    2.807 0.   ]]
+            ```
+            </details>
+
+</details>
 
 <div style="text-align: right">
 
