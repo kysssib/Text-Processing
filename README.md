@@ -999,7 +999,7 @@ express : ^\(0.+9\)$
 
 ## 11. 동시발생행렬
 
-<!-- <details> -->
+<details>
 
 - 단어의 분산 표현
     - 통계기반
@@ -1136,60 +1136,60 @@ express : ^\(0.+9\)$
             - 출현 빈도 없을 시 $log_20=-\infty$가 되므로 양의 값만 가지는 함수 필요
             - $PPMI(x,y) = max(0,PMI(x,y))$
             - <details><summary>코드</summary>
-            ```python
-            def ppmi(C, verbose=False, eps = 1e-8):
-                '''PPMI(점별 상호정보량) 생성
-                :param C: 동시발생 행렬
-                :param verbose: 진행 상황을 출력할지 여부
-                :return:
-                '''
-                M = np.zeros_like(C, dtype=np.float32)
-                N = np.sum(C)
-                S = np.sum(C, axis=0)
-                    total = C.shape[0]*C.shape[1]
-                    cnt = 0
-                print('N = {}, S = {}'.format(N, S))
+                ```python
+                    def ppmi(C, verbose=False, eps = 1e-8):
+                        '''PPMI(점별 상호정보량) 생성
+                        :param C: 동시발생 행렬
+                        :param verbose: 진행 상황을 출력할지 여부
+                        :return:
+                        '''
+                        M = np.zeros_like(C, dtype=np.float32)
+                        N = np.sum(C)
+                        S = np.sum(C, axis=0)
+                            total = C.shape[0]*C.shape[1]
+                            cnt = 0
+                        print('N = {}, S = {}'.format(N, S))
 
-                for i in range(C.shape[0]):
-                    for j in range(C.shape[1]):
-                        pmi = np.log2(C[i, j] * N / (S[j]*S[i]) + eps) #PMI 계산
-                        M[i, j] = max(0, pmi) #Positive
+                        for i in range(C.shape[0]):
+                            for j in range(C.shape[1]):
+                                pmi = np.log2(C[i, j] * N / (S[j]*S[i]) + eps) #PMI 계산
+                                M[i, j] = max(0, pmi) #Positive
 
-                        if verbose: #진행상황
-                            cnt += 1
-                            if cnt % (total//100 + 1) == 0:
-                                print('%.1f%% 완료' % (100*cnt/total))
-                return M
+                                if verbose: #진행상황
+                                    cnt += 1
+                                    if cnt % (total//100 + 1) == 0:
+                                        print('%.1f%% 완료' % (100*cnt/total))
+                        return M
 
-            W = ppmi(co_matrix)
+                    W = ppmi(co_matrix)
 
-            np.set_printoptions(precision=3)  # 유효 자릿수를 세 자리로 표시
-            print('동시발생 행렬')
-            print(co_matrix)
-            print('-'*50)
-            print('PPMI')
-            print(W)
+                    np.set_printoptions(precision=3)  # 유효 자릿수를 세 자리로 표시
+                    print('동시발생 행렬')
+                    print(co_matrix)
+                    print('-'*50)
+                    print('PPMI')
+                    print(W)
 
-            #출력결과
-            N = 14, S = [1 4 2 2 2 2 1]
-            동시발생 행렬
-            [[0 1 0 0 0 0 0]
-            [1 0 1 0 1 1 0]
-            [0 1 0 1 0 0 0]
-            [0 0 1 0 1 0 0]
-            [0 1 0 1 0 0 0]
-            [0 1 0 0 0 0 1]
-            [0 0 0 0 0 1 0]]
-            --------------------------------------------------
-            PPMI
-            [[0.    1.807 0.    0.    0.    0.    0.   ]
-            [1.807 0.    0.807 0.    0.807 0.807 0.   ]
-            [0.    0.807 0.    1.807 0.    0.    0.   ]
-            [0.    0.    1.807 0.    1.807 0.    0.   ]
-            [0.    0.807 0.    1.807 0.    0.    0.   ]
-            [0.    0.807 0.    0.    0.    0.    2.807]
-            [0.    0.    0.    0.    0.    2.807 0.   ]]
-            ```
+                    #출력결과
+                    N = 14, S = [1 4 2 2 2 2 1]
+                    동시발생 행렬
+                    [[0 1 0 0 0 0 0]
+                    [1 0 1 0 1 1 0]
+                    [0 1 0 1 0 0 0]
+                    [0 0 1 0 1 0 0]
+                    [0 1 0 1 0 0 0]
+                    [0 1 0 0 0 0 1]
+                    [0 0 0 0 0 1 0]]
+                    --------------------------------------------------
+                    PPMI
+                    [[0.    1.807 0.    0.    0.    0.    0.   ]
+                    [1.807 0.    0.807 0.    0.807 0.807 0.   ]
+                    [0.    0.807 0.    1.807 0.    0.    0.   ]
+                    [0.    0.    1.807 0.    1.807 0.    0.   ]
+                    [0.    0.807 0.    1.807 0.    0.    0.   ]
+                    [0.    0.807 0.    0.    0.    0.    2.807]
+                    [0.    0.    0.    0.    0.    2.807 0.   ]]
+                ```
             </details>
 
 </details>
