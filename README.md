@@ -1195,7 +1195,8 @@ express : ^\(0.+9\)$
 - 특잇값 분해(SVD)
     - 선형대수에서 특잇값 분해(Singular Value Decomposition)는 행렬을 분해하는 방식 중 하나
     - 행렬의 차원 감소 위한 방법으로 활용 -> 고유값 분해의 일반화 과정
-    <img src="https://ivy-hospital-413.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fc7e86ca7-6694-493e-b73d-60d1f3b157b8%2Ffig_2-8.png?id=868c3890-c9b8-4b47-afea-7f403a1edf75&table=block&spaceId=4df7c095-f16c-49b1-9f2e-58f72fb09349&width=2000&userId=&cache=v2"></img>
+        <img src="https://ivy-hospital-413.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fc7e86ca7-6694-493e-b73d-60d1f3b157b8%2Ffig_2-8.png?id=868c3890-c9b8-4b47-afea-7f403a1edf75&table=block&spaceId=4df7c095-f16c-49b1-9f2e-58f72fb09349&width=2000&userId=&cache=v2"></img>
+
     차원이 축소되어도 본질적 특성을 가진 값을 구별할 수 있도록 fit(적합)시켜야함
     - 사용 이유
         1. 희소벡터는 대부분 0의 값
