@@ -1197,7 +1197,7 @@ express : ^\(0.+9\)$
     - 행렬의 차원 감소 위한 방법으로 활용 -> 고유값 분해의 일반화 과정
         <img width="1000" alt="fig_2-8" src="https://github.com/kysssib/Text-Processing/assets/113497500/4d4478b1-e05a-4b4a-8edb-62ab2de39594">
 
-    차원이 축소되어도 본질적 특성을 가진 값을 구별할 수 있도록 fit(적합)시켜야함
+        차원이 축소되어도 본질적 특성을 가진 값을 구별할 수 있도록 fit(적합)시켜야함
     - 사용 이유
         1. 희소벡터는 대부분 0의 값
         2. 희소벡터 -> 밀집벡터(대부분 0이 아닌 값) 효율성 up
@@ -1309,6 +1309,25 @@ express : ^\(0.+9\)$
         print('[{}] : {}...'.format(id, doc[:30])) #예문 출력
         
         doc_tokens, corpus, word_to_id, id_to_word = buildDict(docs)
+
+        #출력결과
+        [0] : BTS, also known as the Bangtan...
+        [1] : [5] The septet—consisting of m...
+        [2] : Originally a hip hop group, th...
+        [3] : Their lyrics, often focused on...
+        [4] : Their work also often referenc...
+        [5] : After debuting in 2013 with th...
+        [6] : The group's second Korean stud...
+        [7] : By 2017, BTS crossed into the ...
+        [8] : They became the first Korean g...
+        [9] : BTS became one of the few grou...
+        [10] : In 2020, BTS became the first ...
+        [11] : Their follow-up releases "Sava...
+        [12] : Having sold over 20 million al...
+        [13] : They are the first Asian and n...
+        [14] : Featured on Time's internation...
+        [15] : The group's numerous accolades...
+        [16] : Outside of music, they partner...
         ```
         </details>
 
@@ -1356,11 +1375,62 @@ express : ^\(0.+9\)$
                 M[i, j] = max(0, pmi)
         return 
         
-        
+        window_size = 2
+
+        vocab_size = len(word_to_id)
+        print('동시발생행렬 계산')
+        C = create_co_matrix(corpus, vocab_size, window_size)
+        W = ppmi(C)
+
+        print(C[0,:10])
+        print(W[0, :10])
+
+        #출력결과
+        동시발생행렬 계산
+        [0 1 1 0 0 0 0 0 0 0]
+        [0.        7.412217  6.9971795 0.        0.        0.        0.        0.        0.        0.       ]
         
         ```
         </details>
 
+    3. <details><summary>SVD 생성</summary>
+        ```python
+        from sklearn.utils.extmath import randomized_svd
+        wordvec_size = 100
+
+        #행렬 분해
+        U, S, V = randomized_svd(W, n_components=wordvec_size, n_iter=5, random_state=None)
+
+        from sklearn.metrics.pairwise import cosine_similarity
+        def most_similar(query, word_to_id, id_to_word, word_matrix, top=5):
+
+            if query not in word_to_id:
+                print('{}를 찾을 수 없음.'.format(query))
+                return
+
+            word_vector = np.array(word_matrix[word_to_id[query]]) #쿼리 단어 벡터 추출
+            word_vector = word_vector.reshape(1,-1) #cosine_similarity 위해 벡터 형상 조정
+            sim = cosine_similarity(word_vector, word_matrix)
+            sim = sim[0] #벡터 형상 조정 ([[]] -> [])
+            sim = [(id, cos) for id, cos in enumerate(sim)] #id, 유사도쌍으로  정리
+            sim = sorted(sim, key=lambda x: x[1], reverse=True) #유사도 높은 순 정렬
+            
+            return sim[1:top+1]
+
+        rank = most_similar('world', word_to_id, id_to_word, U)
+        for r in rank:
+        print(id_to_word[r[0]], r[1])
+
+        #출력결과
+        artist 0.5381843
+        known 0.4821964
+        stadium 0.44456828
+        influential 0.39760613
+        best-selling 0.22235802
+        ```
+        </details>
+
+    - [자세한 사항은 코드 짠거 함 봐보기](https://colab.research.google.com/drive/1rg6G8-n5Zl2JmtmENVfwbYCt7gdgBjvp?hl=ko#scrollTo=JFL1SHxtHOch)
 
 </details>
 
@@ -1370,3 +1440,5 @@ express : ^\(0.+9\)$
 </div>
 
 ---
+
+## 12. 
