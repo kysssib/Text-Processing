@@ -1120,7 +1120,6 @@ express : ^\(0.+9\)$
             print(id_to_word[r[0]], r[1])
         ```
         </details>
-
 - 점별 상호 정보량 처리
      - $PMI(x,y) = log_2\frac{P(x,y)}{P(x)P(y)}=log_2\frac{\frac{n(x,y)}{N}}{\frac{n_x}{N}\frac{n_y}{N}} = log_2\frac{n(x,y)N}{n_xn_y}$
      - 전체 동시출현 횟수가 10,000회라고 할 때, 다음과 같은 발생 횟수를 나타낸다고 가정할 때
@@ -1136,61 +1135,232 @@ express : ^\(0.+9\)$
             - 출현 빈도 없을 시 $log_20=-\infty$가 되므로 양의 값만 가지는 함수 필요
             - $PPMI(x,y) = max(0,PMI(x,y))$
             - <details><summary>코드</summary>
+            
                 ```python
-                    def ppmi(C, verbose=False, eps = 1e-8):
-                        '''PPMI(점별 상호정보량) 생성
-                        :param C: 동시발생 행렬
-                        :param verbose: 진행 상황을 출력할지 여부
-                        :return:
-                        '''
-                        M = np.zeros_like(C, dtype=np.float32)
-                        N = np.sum(C)
-                        S = np.sum(C, axis=0)
-                            total = C.shape[0]*C.shape[1]
-                            cnt = 0
-                        print('N = {}, S = {}'.format(N, S))
+                def ppmi(C, verbose=False, eps = 1e-8):
+                    '''PPMI(점별 상호정보량) 생성
+                    :param C: 동시발생 행렬
+                    :param verbose: 진행 상황을 출력할지 여부
+                    :return:
+                    '''
+                    M = np.zeros_like(C, dtype=np.float32)
+                    N = np.sum(C)
+                    S = np.sum(C, axis=0)
+                        total = C.shape[0]*C.shape[1]
+                        cnt = 0
+                    print('N = {}, S = {}'.format(N, S))
 
-                        for i in range(C.shape[0]):
-                            for j in range(C.shape[1]):
-                                pmi = np.log2(C[i, j] * N / (S[j]*S[i]) + eps) #PMI 계산
-                                M[i, j] = max(0, pmi) #Positive
+                    for i in range(C.shape[0]):
+                        for j in range(C.shape[1]):
+                            pmi = np.log2(C[i, j] * N / (S[j]*S[i]) + eps) #PMI 계산
+                            M[i, j] = max(0, pmi) #Positive
 
-                                if verbose: #진행상황
-                                    cnt += 1
-                                    if cnt % (total//100 + 1) == 0:
-                                        print('%.1f%% 완료' % (100*cnt/total))
-                        return M
+                            if verbose: #진행상황
+                                cnt += 1
+                                if cnt % (total//100 + 1) == 0:
+                                    print('%.1f%% 완료' % (100*cnt/total))
+                    return M
 
-                    W = ppmi(co_matrix)
+                W = ppmi(co_matrix)
 
-                    np.set_printoptions(precision=3)  # 유효 자릿수를 세 자리로 표시
-                    print('동시발생 행렬')
-                    print(co_matrix)
-                    print('-'*50)
-                    print('PPMI')
-                    print(W)
+                np.set_printoptions(precision=3)  # 유효 자릿수를 세 자리로 표시
+                print('동시발생 행렬')
+                print(co_matrix)
+                print('-'*50)
+                print('PPMI')
+                print(W)
 
-                    #출력결과
-                    N = 14, S = [1 4 2 2 2 2 1]
-                    동시발생 행렬
-                    [[0 1 0 0 0 0 0]
-                    [1 0 1 0 1 1 0]
-                    [0 1 0 1 0 0 0]
-                    [0 0 1 0 1 0 0]
-                    [0 1 0 1 0 0 0]
-                    [0 1 0 0 0 0 1]
-                    [0 0 0 0 0 1 0]]
-                    --------------------------------------------------
-                    PPMI
-                    [[0.    1.807 0.    0.    0.    0.    0.   ]
-                    [1.807 0.    0.807 0.    0.807 0.807 0.   ]
-                    [0.    0.807 0.    1.807 0.    0.    0.   ]
-                    [0.    0.    1.807 0.    1.807 0.    0.   ]
-                    [0.    0.807 0.    1.807 0.    0.    0.   ]
-                    [0.    0.807 0.    0.    0.    0.    2.807]
-                    [0.    0.    0.    0.    0.    2.807 0.   ]]
+                #출력결과
+                N = 14, S = [1 4 2 2 2 2 1]
+                동시발생 행렬
+                [[0 1 0 0 0 0 0]
+                [1 0 1 0 1 1 0]
+                [0 1 0 1 0 0 0]
+                [0 0 1 0 1 0 0]
+                [0 1 0 1 0 0 0]
+                [0 1 0 0 0 0 1]
+                [0 0 0 0 0 1 0]]
+                --------------------------------------------------
+                PPMI
+                [[0.    1.807 0.    0.    0.    0.    0.   ]
+                [1.807 0.    0.807 0.    0.807 0.807 0.   ]
+                [0.    0.807 0.    1.807 0.    0.    0.   ]
+                [0.    0.    1.807 0.    1.807 0.    0.   ]
+                [0.    0.807 0.    1.807 0.    0.    0.   ]
+                [0.    0.807 0.    0.    0.    0.    2.807]
+                [0.    0.    0.    0.    0.    2.807 0.   ]]
                 ```
-            </details>
+                </details>
+
+- 특잇값 분해(SVD)
+    - 선형대수에서 특잇값 분해(Singular Value Decomposition)는 행렬을 분해하는 방식 중 하나
+    - 행렬의 차원 감소 위한 방법으로 활용 -> 고유값 분해의 일반화 과정
+    <img src="https://ivy-hospital-413.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fc7e86ca7-6694-493e-b73d-60d1f3b157b8%2Ffig_2-8.png?id=868c3890-c9b8-4b47-afea-7f403a1edf75&table=block&spaceId=4df7c095-f16c-49b1-9f2e-58f72fb09349&width=2000&userId=&cache=v2">
+    차원이 축소되어도 본질적 특성을 가진 값을 구별할 수 있도록 fit(적합)시켜야함
+    - 사용 이유
+        1. 희소벡터는 대부분 0의 값
+        2. 희소벡터 -> 밀집벡터(대부분 0이 아닌 값) 효율성 up
+        3. 특잇값 분해로 본질적 값에 적합하도록 차원을 줄여 근사시킴
+
+    - 사용 방법
+        - $X = USV^T$
+            - U : 직교 행렬이며 원본의 행
+            - S : 대각 행렬 (대각성분 외 모두 0) 특잇값 큰 순서대로 나열, U의 중요도 순서
+            - V : 직교 행렬이며 원본의 열
+        <img src = "https://ivy-hospital-413.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fd7ef893d-d33e-4700-a65c-ab6861db0aee%2Ffig_2-9.png?id=420e659e-3e5b-482b-864f-db9bae82206b&table=block&spaceId=4df7c095-f16c-49b1-9f2e-58f72fb09349&width=2000&userId=&cache=v2">
+
+    - 원본 복원
+        - S벡터(특잇값)의 원소 중 값이 낮은 값을 제거하고 SVD를 수행시 원복은 불가하나 근사값으로 복원이 가능
+
+            <img src="https://ivy-hospital-413.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F5734212d-288b-47be-8fab-dd4f801e5233%2F%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2022-04-27_12.44.47.png?id=7d22d2e0-0a1c-4d2d-81ec-abd65a3b1f77&table=block&spaceId=4df7c095-f16c-49b1-9f2e-58f72fb09349&width=2000&userId=&cache=v2">
+    
+    - <details><summary>동시발생행렬에 적용</summary>
+
+        ```python
+        U, S, VT = np.linalg.svd(W) #PPMI행렬인 W를 SVD화
+        print("동시발생행렬\n", np.round(co_matrix, 3))
+        print("PPMI적용행렬\n", np.round(W, 3))
+        print("U행렬\n", np.round(U, 3))
+        print("S행렬(대각요소값)\n", np.round(S, 3))
+
+        S_matrix = np.diag(S) #대각성분 추출
+        W_ = np.dot(np.dot(U, S_matrix), VT) #U와 대각성분 행렬 곱 후 VT와 행렬 곱
+        print("SVD 복원 행렬 : \n",np.round(W_, 3))
+
+        #출력결과
+        동시발생행렬
+        [[0 1 0 0 0 0 0]
+        [1 0 1 0 1 1 0]
+        [0 1 0 1 0 0 0]
+        [0 0 1 0 1 0 0]
+        [0 1 0 1 0 0 0]
+        [0 1 0 0 0 0 1]
+        [0 0 0 0 0 1 0]]
+        PPMI적용행렬
+        [[0.    1.807 0.    0.    0.    0.    0.   ]
+        [1.807 0.    0.807 0.    0.807 0.807 0.   ]
+        [0.    0.807 0.    1.807 0.    0.    0.   ]
+        [0.    0.    1.807 0.    1.807 0.    0.   ]
+        [0.    0.807 0.    1.807 0.    0.    0.   ]
+        [0.    0.807 0.    0.    0.    0.    2.807]
+        [0.    0.    0.    0.    0.    2.807 0.   ]]
+        U행렬
+        [[ 0.341 -0.    -0.121 -0.    -0.932 -0.    -0.   ]
+        [ 0.    -0.598  0.     0.18   0.    -0.781  0.   ]
+        [ 0.436 -0.    -0.509 -0.     0.225 -0.    -0.707]
+        [ 0.    -0.498  0.     0.68  -0.     0.538  0.   ]
+        [ 0.436 -0.    -0.509 -0.     0.225 -0.     0.707]
+        [ 0.709 -0.     0.684 -0.     0.171 -0.     0.   ]
+        [-0.    -0.628 -0.    -0.71   0.     0.317 -0.   ]]
+        S행렬(대각요소값)
+        [3.168 3.168 2.703 2.703 1.514 1.514 0.   ]
+        SVD 복원 행렬 : 
+        [[ 0.     1.807  0.    -0.     0.     0.     0.   ]
+        [ 1.807 -0.     0.807  0.     0.807  0.807  0.   ]
+        [ 0.     0.807 -0.     1.807  0.     0.     0.   ]
+        [ 0.    -0.     1.807  0.     1.807 -0.     0.   ]
+        [ 0.     0.807 -0.     1.807  0.     0.     0.   ]
+        [ 0.     0.807  0.    -0.     0.     0.     2.807]
+        [ 0.     0.     0.    -0.     0.     2.807 -0.   ]]
+        ```
+        </details> 
+
+- 종합 코드
+
+    1. <details><summary>사전 구축</summary>
+    
+        ```python
+        #사전 구축 함수
+        from nltk import FreqDist
+        import numpy as np
+        import re
+        import nltk
+        nltk.download('stopwords')
+
+        from nltk.corpus import stopwords
+
+        sw = stopwords.words('english')
+
+        def buildDict(docs):
+            doc_tokens = []     # python list
+            for doc in docs:
+                delim = re.compile(r'[\s,.]+')
+                tokens = delim.split(doc.lower()) 
+                tokens = [t for t in tokens if t not in sw]
+                if tokens[-1] == '' :   tokens = tokens[:-1] 
+                doc_tokens.append(tokens)
+
+                
+            vocab = FreqDist(np.hstack(doc_tokens))
+            vocab = vocab.most_common()
+            word_to_id = {word[0] : id for id, word in enumerate(vocab)}
+            id_to_word = {id : word[0] for id, word in enumerate(vocab)}
+            corpus = np.array([id for id, _ in enumerate(vocab)])
+            return doc_tokens, corpus, word_to_id, id_to_word
+
+        # 파일을 불러와 사전 생성
+
+        import pandas as pd
+
+        with open('./sample_data/sample.txt', 'r') as f:
+        docs = f.readlines()
+
+        for id, doc in enumerate(docs):
+        print('[{}] : {}...'.format(id, doc[:30])) #예문 출력
+        
+        doc_tokens, corpus, word_to_id, id_to_word = buildDict(docs)
+        ```
+        </details>
+
+    2. <details><summary>동시발생행렬과 PPMI 생성</summary>
+
+        ```python
+        def create_co_matrix(corpus, vocab_size, window_size=1):
+        # 동시발생 행렬 생성
+        # :param corpus: 말뭉치(단어 ID 목록)
+        # :param vocab_size: 어휘 수
+        # :param window_size: 윈도우 크기(윈도우 크기가 1이면 타깃 단어 좌우 한 단어씩이 맥락에 포함)
+        # :return: 동시발생 행렬
+        
+        corpus_size = len(corpus)
+        co_matrix = np.zeros((vocab_size, vocab_size), dtype=np.int32)
+
+        for idx, word_id in enumerate(corpus):
+            for i in range(1, window_size + 1):
+                left_idx = idx - i
+                right_idx = idx + i
+
+                if left_idx >= 0:
+                    left_word_id = corpus[left_idx]
+                    co_matrix[word_id, left_word_id] += 1
+
+                if right_idx < corpus_size:
+                    right_word_id = corpus[right_idx]
+                    co_matrix[word_id, right_word_id] += 1
+
+        return co_matrix
+
+        def ppmi(C, verbose=False, eps = 1e-8):
+        # PPMI(점별 상호정보량) 생성
+        # :param C: 동시발생 행렬
+        # :param verbose: 진행 상황을 출력할지 여부
+        # :return:
+
+        M = np.zeros_like(C, dtype=np.float32)
+        N = np.sum(C)
+        S = np.sum(C, axis=0)
+
+        for i in range(C.shape[0]):
+            for j in range(C.shape[1]):
+                pmi = np.log2(C[i, j] * N / (S[j]*S[i]) + eps)
+                M[i, j] = max(0, pmi)
+        return 
+        
+        
+        
+        ```
+        </details>
+
 
 </details>
 
