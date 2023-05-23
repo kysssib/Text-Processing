@@ -1207,7 +1207,7 @@ express : ^\(0.+9\)$
             - U : 직교 행렬이며 원본의 행
             - S : 대각 행렬 (대각성분 외 모두 0) 특잇값 큰 순서대로 나열, U의 중요도 순서
             - V : 직교 행렬이며 원본의 열
-        <img src = "https://ivy-hospital-413.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fd7ef893d-d33e-4700-a65c-ab6861db0aee%2Ffig_2-9.png?id=420e659e-3e5b-482b-864f-db9bae82206b&table=block&spaceId=4df7c095-f16c-49b1-9f2e-58f72fb09349&width=2000&userId=&cache=v2">
+            <img src = "https://ivy-hospital-413.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fd7ef893d-d33e-4700-a65c-ab6861db0aee%2Ffig_2-9.png?id=420e659e-3e5b-482b-864f-db9bae82206b&table=block&spaceId=4df7c095-f16c-49b1-9f2e-58f72fb09349&width=2000&userId=&cache=v2">
 
     - 원본 복원
         - S벡터(특잇값)의 원소 중 값이 낮은 값을 제거하고 SVD를 수행시 원복은 불가하나 근사값으로 복원이 가능
