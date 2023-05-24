@@ -1394,40 +1394,40 @@ express : ^\(0.+9\)$
         </details>
 
     3. <details><summary>SVD 생성</summary>
-        ```python
-        from sklearn.utils.extmath import randomized_svd
-        wordvec_size = 100
+            ```python
+            from sklearn.utils.extmath import randomized_svd
+            wordvec_size = 100
 
-        #행렬 분해
-        U, S, V = randomized_svd(W, n_components=wordvec_size, n_iter=5, random_state=None)
+            #행렬 분해
+            U, S, V = randomized_svd(W, n_components=wordvec_size, n_iter=5, random_state=None)
 
-        from sklearn.metrics.pairwise import cosine_similarity
-        def most_similar(query, word_to_id, id_to_word, word_matrix, top=5):
+            from sklearn.metrics.pairwise import cosine_similarity
+            def most_similar(query, word_to_id, id_to_word, word_matrix, top=5):
 
-            if query not in word_to_id:
-                print('{}를 찾을 수 없음.'.format(query))
-                return
+                if query not in word_to_id:
+                    print('{}를 찾을 수 없음.'.format(query))
+                    return
 
-            word_vector = np.array(word_matrix[word_to_id[query]]) #쿼리 단어 벡터 추출
-            word_vector = word_vector.reshape(1,-1) #cosine_similarity 위해 벡터 형상 조정
-            sim = cosine_similarity(word_vector, word_matrix)
-            sim = sim[0] #벡터 형상 조정 ([[]] -> [])
-            sim = [(id, cos) for id, cos in enumerate(sim)] #id, 유사도쌍으로  정리
-            sim = sorted(sim, key=lambda x: x[1], reverse=True) #유사도 높은 순 정렬
-            
-            return sim[1:top+1]
+                word_vector = np.array(word_matrix[word_to_id[query]]) #쿼리 단어 벡터 추출
+                word_vector = word_vector.reshape(1,-1) #cosine_similarity 위해 벡터 형상 조정
+                sim = cosine_similarity(word_vector, word_matrix)
+                sim = sim[0] #벡터 형상 조정 ([[]] -> [])
+                sim = [(id, cos) for id, cos in enumerate(sim)] #id, 유사도쌍으로  정리
+                sim = sorted(sim, key=lambda x: x[1], reverse=True) #유사도 높은 순 정렬
 
-        rank = most_similar('world', word_to_id, id_to_word, U)
-        for r in rank:
-        print(id_to_word[r[0]], r[1])
+                return sim[1:top+1]
 
-        #출력결과
-        artist 0.5381843
-        known 0.4821964
-        stadium 0.44456828
-        influential 0.39760613
-        best-selling 0.22235802
-        ```
+            rank = most_similar('world', word_to_id, id_to_word, U)
+            for r in rank:
+            print(id_to_word[r[0]], r[1])
+
+            #출력결과
+            artist 0.5381843
+            known 0.4821964
+            stadium 0.44456828
+            influential 0.39760613
+            best-selling 0.22235802
+            ```
         </details>
 
     - [자세한 사항은 코드 짠거 함 봐보기](https://colab.research.google.com/drive/1rg6G8-n5Zl2JmtmENVfwbYCt7gdgBjvp?hl=ko#scrollTo=JFL1SHxtHOch)
