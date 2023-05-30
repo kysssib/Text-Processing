@@ -1544,12 +1544,14 @@ express : ^\(0.+9\)$
         - 어떤 값을 1로 기준잡을 것인지
 
         - 계단 함수
+            
             ![화면 캡처 2023-05-30 223031](https://github.com/kysssib/Text-Processing/assets/113497500/53964f43-b2cd-440b-bb01-d3a13c880c7c)
             - $h(x) = {0(x\le  0)\brace 1(x>0)}$
             - 잘 안씀
             - 임계값 기준 넘으면 1, 아니면 0
 
         - 시그모이드 함수
+            
             ![화면 캡처 2023-05-30 223031](https://github.com/kysssib/Text-Processing/assets/113497500/6d7d31b5-b5f2-477c-b9a9-dc988d6fb0be)
             - $y=\frac{1}{1+e^{-x}}$
             - 모든 값에 대하여 0~1 사이 값
