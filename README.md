@@ -17,6 +17,7 @@
     9. [정규표현식](#9-정규표현식regular-expression)
     10. [형태소 분석](#10-형태소-분석)
     11. [동시발생행렬](#11-동시발생행렬)
+    12. [CBOW](#12-cbow)
     </details>
 
 ---
@@ -1019,7 +1020,7 @@ express : ^\(0.+9\)$
         -  동시발생행렬
         - 특정 단어의 주변에 나타나는 단어의 횟수를 기록하는 간단한 방법
     
-    - 예문 : **you say goodbye and i say hello**
+    - 예문 : **you say goodbye and i say hello.**
         - ||you|say|goodbye|and|i|hello|.|
             |--|--|--|--|--|--|--|--|
             |you|0|1|0|0|0|0|0|
@@ -1441,4 +1442,90 @@ express : ^\(0.+9\)$
 
 ---
 
-## 12. 
+## 12. CBOW
+
+<!-- <details> -->
+- 동시발생행렬의 문제점
+    - 말뭉치 증가 -> 단어벡터 커짐
+    - 사전 단어 100만 -> 벡터 크기 동일
+    - 특잇값 분해(SVD) $n \times n$ 행렬 -> $O(n^3)$의 시간 소요
+- The machine is easy to use.
+<img width="1548" alt="스크린샷 2022-03-18 15 11 43" src="https://github.com/kysssib/Text-Processing/assets/113497500/71da54df-7a9e-4f51-baba-d97722e8c3d9">
+    - 원핫벡터 표현
+    - 사전 크기 : 7
+
+- 맥락과 입출력
+<img width="1411" alt="스크린샷 2022-03-18 15 11 52" src="https://github.com/kysssib/Text-Processing/assets/113497500/1906c45e-02e3-4067-8ca1-b1043c3777a1">
+
+- CBOW의 입출력
+<img width="1713" alt="스크린샷 2022-03-18 15 12 00" src="https://github.com/kysssib/Text-Processing/assets/113497500/1beefb3a-5bf5-45f8-be34-e2f6664773fa">
+    - 입력 : 맥락 정보
+    - 출력 : 맥락에 해당하는 타겟 단어
+    - 학습과정 : 맥락정보로 타겟단어를 추측 가능하게 계속 학습
+    - 가중치 값을 단어 분산표현으로 사용
+
+- 동작 과정
+    <img width="1787" alt="스크린샷 2022-03-18 15 12 11" src="https://github.com/kysssib/Text-Processing/assets/113497500/ad484242-5d3c-4bf0-a898-c8f3032db9ed">
+    - 입력과 출력해야하는 정보
+    - 단어사전 크기 : 7
+
+    <img width="1634" alt="스크린샷 2022-03-18 15 12 23" src="https://github.com/kysssib/Text-Processing/assets/113497500/e2233899-5dd3-47ed-8bf5-d7fb0afb3f38">
+
+    - 입력레이어(V) : 7 * 4 행렬
+        - 현재는 초기설정이라 랜덤값이 들어감
+            ||$W_{in1}$|$W_{in2}$|$W_{in3}$|$W_{in4}$|
+            |---|---|---|---|---|
+            |the|...|...|...|...|
+            |machine|0.5|0.2|0.7|1.2|
+            |...|...|...|...|...|
+            |easy|0.7|1.3|2.8|0.2|
+            |...|...|...|...|...|
+
+        - 히든 레이어 계산
+            - $h=\frac{W_{in-macine}+W_{in-easy}}{2\times windowsize}$
+
+    - 히든레이어(M) : 현재는 4 보통 100~300
+        - $[h1,h2,h3,h4]$
+        - $h1=\frac{0.5+0.7}{2\times 1}=0.6$
+        - $h2=\frac{0.2+1.3}{2\times 1}=0.7$
+        - $h3=\frac{0.7+2.8}{2\times 1}=1.7$
+        - $h4=\frac{1.2+0.2}{2\times 1}=0.7$
+        - $= [0.6, 0.7, 1.7, 0.7]$
+
+    - 가중치계산 : 4 * 7 행렬(초기는 랜덤값 -> 학습하며 조정 -> 타겟 벡터에 근접하도록)
+        - 가중치 값 계산 (여기도 초기엔 랜덤한 값)
+            ||$W_{out1}$|$W_{out2}$|$W_{out3}$|$W_{out4}$|$W_{out5}$|$W_{out6}$|$W_{out7}$|
+            |---|---|---|---|---|---|---|---|
+            |h1|$x_{1}$|...|...|...|...|...|...|
+            |h2|$x_{2}$|...|...|...|...|...|...|
+            |h3|$x_{3}$|...|...|...|...|...|...|
+            |h4|$x_{4}$|...|...|...|...|...|...|
+        - 출력리스트 = [out1, out2, out3, out4, out5, out6, out7]
+        - $score = h\times W_{out}$
+        - $out1 = (h1\times W_{out1}|h1) + (h2\times W_{out1}|h2) + (h3\times W_{out1}|h3) + (h4\times W_{out1}|h4)$
+        - $= (0.6\times x_{1}) + (0.7\times x_{2}) + (1.7\times x_{3}) + (0.7\times x_{4})  = 0.7$
+        - 가중치 결과값 = [0.7, 1.8, 3.2, 0.9, 0.8, 0.1, 0.1]
+        - 실제 타겟 값 = [0, 0, 1, 0, 0, 0, 0]
+        - 각각 대조 비교
+            - 스코어 정규화
+            - 오차 계산
+            - 가중치 값 조정(최적화)
+        
+
+
+
+</details>
+
+<div style="text-align: right">
+
+[목차](#목차)
+</div>
+
+---
+
+## 
+
+<div style="text-align: right">
+
+[목차](#목차)
+</div>
