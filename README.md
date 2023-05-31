@@ -1395,6 +1395,7 @@ express : ^\(0.+9\)$
         </details>
 
     3. <details><summary>SVD 생성</summary>
+            
             ```python
             from sklearn.utils.extmath import randomized_svd
             wordvec_size = 100
