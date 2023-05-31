@@ -1079,6 +1079,7 @@ express : ^\(0.+9\)$
         <details><summary>동시발생행렬 활용 코드</summary>
         
         코사인 유사도
+            
         ```python
         import pandas as pd
 
@@ -1098,7 +1099,9 @@ express : ^\(0.+9\)$
         5	0.707107	0.000000	0.500000	0.000000	0.500000	1.000000	0.0
         6	0.000000	0.500000	0.000000	0.000000	0.000000	0.000000	1.0
         ```
+            
         입력 쿼리와 유사도가 높은 단어 반환
+            
         ```python
         def most_similar(query, word_to_id, id_to_word, word_matrix, top=3):
 
@@ -1120,6 +1123,7 @@ express : ^\(0.+9\)$
         for r in rank:
             print(id_to_word[r[0]], r[1])
         ```
+            
         </details>
 - 점별 상호 정보량 처리
      - $PMI(x,y) = log_2\frac{P(x,y)}{P(x)P(y)}=log_2\frac{\frac{n(x,y)}{N}}{\frac{n_x}{N}\frac{n_y}{N}} = log_2\frac{n(x,y)N}{n_xn_y}$
@@ -1394,7 +1398,9 @@ express : ^\(0.+9\)$
         ```
         </details>
 
-    3. <details><summary>SVD 생성</summary>
+    3. <details>
+            <summary>SVD 생성</summary>
+            
             
             ```python
             from sklearn.utils.extmath import randomized_svd
@@ -1427,8 +1433,9 @@ express : ^\(0.+9\)$
             artist 0.5381843
             known 0.4821964
             stadium 0.44456828
-            influential 0.39760613
-            best-selling 0.22235802
+            influential 0.397606
+            best-selling 0.22235
+            802
             ```
         </details>
 
