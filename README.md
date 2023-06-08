@@ -1651,7 +1651,138 @@ express : ^\(0.+9\)$
 
 ---
 
-## 
+## 13. TMDB 실습
+<!-- <details> -->
+
+1. 데이터 전처리
+    - 드라이브 마운트, 불러오기 및 null행 삭제
+    ```python
+    #구글드라이브 마운트
+    from google.colab import drive
+    import os
+    drive.mount('/content/drive') #구글드라이브 마운트 위치
+
+    import pandas as pd
+    #구글 드라이브 내 다운로드 받은 csv 파일의 디렉토리 위치 설정
+    path_dir = './drive/MyDrive/Colab Notebooks/sampledata/' 
+    file = path_dir+'tmdb_5000_movies.csv' #다운로드 받은 파일
+
+    df = pd.read_csv(file)
+    movies = df[['original_title', 'overview']]
+    movies = movies.dropna(axis=0)              #NaN 값이 있는 행 삭제(axis=1 >> 열 삭제)
+    print(movies.shape)
+    ```
+2. 문장 토큰화
+    - overview의 모든 문장을 nomalized_text에 저장 후 result에 각 문장 토큰화 해 저장
+    ```python
+    import re
+    import nltk
+    from nltk.tokenize import word_tokenize, sent_tokenize
+    nltk.download('punkt')
+
+    overview_text = movies['overview']
+
+    normalized_text = []
+    for string in overview_text:
+        tokens = re.sub(r"[^a-z0-9]+", " ", string.lower())
+        #문자 소문자화 후 소문자,숫자 외의 모든 문자를 ' '으로 변경
+        normalized_text.append(tokens)
+
+    # 각 문장에 대해서 NLTK를 이용하여 단어 토큰화를 수행.
+    result = [word_tokenize(sentence) for sentence in normalized_text]
+    print('총 샘플의 개수 : {}'.format(len(result)))
+
+    ###출력결과
+    총 샘플의 개수 : 4800
+    ```
+3. Word2Vec 파라미터 셋팅 및 모델 생성
+    
+    모델 파라미터 값
+    1. vector_size : 히든레이어 크기 -> 밀집 벡터의 크기 의미(100~300사이)
+    2. window : 맥락의 크기, 학습단어 좌/우 단어 선택 수
+    3. min_count : 최소 빈도수 이하 단어 모델 학습에 배제
+    4. workers : 모델 학습 시 쓰레드 개수
+    5. sg : 0이면 CBOW, 1이면 SkipGram
+    6. hs : 0이면 네거티브 샘플링, 1이면 softmax(Default 0)
+    7. negative : 0보다 크면 네거티브샘플링의 'noise words' 갯수로 활용(Default 5)
+    8. alpha : learning rate(Default 0.025)
+    9. epochs : 전체 코퍼스 반복횟수(Default 5)
+    10. batch_words : 단어의 배치 크기(Default 10000)
+    
+- TDMB 데이터 셋 Word2Vec모델 생성, 저장
+    ```python 
+    from gensim.models import Word2Vec
+    from gensim.models import KeyedVectors
+
+    model = Word2Vec(sentences=result, vector_size=100, window=2, min_count=5, workers=4, sg=0)
+    #계산 된 모델을 파일경로에 tmdb.model로 저장
+    model.save(path_dir+'tmdb.model')
+    ```
+- TMDB 모델 로드, 확인 
+    ```python 
+    from gensim.models import Word2Vec
+    
+    #저장된 모델을 로딩
+    model = Word2Vec.load(path_dir+'tmdb.model')
+
+    from gensim.models import KeyedVectors
+    import numpy as np
+
+    np.set_printoptions(precision=4, suppress=True)
+    #단어 action의 임베딩 데이터 확인
+    vector = model.wv['action']
+    print(len(vector)) #히든 레이어가 100이므로 100크기로 임베딩됨
+    print(vector)
+    #------------------------------
+    #출력결과
+    100
+    [ 0.0022  0.4948 -0.1071 -0.0132 -0.4161  0.2684 -0.1393 -0.3209 -0.1255
+    -0.0001  0.1339 -0.3903  0.1762 -0.0301  0.1442  0.2307  0.3176  0.306
+    0.2345 -0.5239 -0.5775  0.5355 -0.0685  0.0601 -0.1139 -0.1307 -0.0753
+    0.21   -0.0488  0.0438 -0.4096 -0.3975 -0.0171 -0.0903  0.0987 -0.0391
+    0.0172 -0.203   0.256   0.2358  0.1464  0.2245 -0.1092 -0.1938 -0.2323
+    0.1351  0.3515  0.201   0.1164  0.2019  0.2507  0.4502 -0.0073 -0.2095
+    -0.2257 -0.0936  0.3458 -0.2447  0.1566 -0.3166 -0.1323 -0.3226 -0.5186
+    0.0992 -0.1003 -0.0626  0.2178  0.0279 -0.0367  0.1141  0.5313 -0.2391
+    -0.2287 -0.1824 -0.223   0.0951 -0.1431 -0.2401  0.0844 -0.1622  0.3878
+    -0.1524 -0.1482  0.0566  0.0891  0.3509  0.2894  0.0924  0.1543  0.261
+    -0.3001 -0.0677 -0.1513 -0.2091 -0.7584 -0.7606 -0.1204  0.0177 -0.3488
+    0.1927]
+    ```
+- wv.most_similar 함수
+    ```python
+    sims = model.wv.most_similar('action', topn=10)
+    #action과 코사인 유사도가 높은 10개의 단어 출력
+    print(sims)
+
+    ###출력결과
+    [('adventure', 0.9994416236877441), ('state', 0.9993367791175842), 
+    ('east', 0.9992945790290833), ('top', 0.9992831349372864),
+    ('coming', 0.9992748498916626), ('desert', 0.9992640614509583),
+    ('pair', 0.9992302060127258), ('community', 0.9992255568504333),
+    ('police', 0.9991926550865173), ('early', 0.9991670846939087)]
+    ```
+
+- KeyedVectors Save & Load
+
+    해당 결과를 KeyedVectors에 분리해 저장
+    ```python
+    w2v_tmdb = path_dir+'w2v_tmdb'
+
+    word_vectors = model.wv
+    word_vectors.save(w2v_tmdb)
+
+    wv = KeyedVectors.load(w2v_tmdb, mmap='r')
+    print(wv.vectors.shape)
+
+    ###출력결과
+    (5549, 100)
+    ```
+
+
+
+
+</details>
 
 <div style="text-align: right">
 
