@@ -1623,7 +1623,7 @@ express : ^\(0.+9\)$
             - 추정값이 정답이면 자연로그는 0, 정답과 가까울수록 0에 가까움
             ![image](https://github.com/kysssib/Text-Processing/assets/113497500/7decbca8-33c6-4d66-9ce2-e6c1fa48d388)
                 - x=0 : 로그 값 없음
-                - x가 0에 근접 : 로그값은 $-\infin$
+                - x가 0에 근접 : 로그값은 $-\infty$
                 - x가 1에 근접 : 로그값은 0에 근접
                 - x가 1 : 로그값은 0
 
