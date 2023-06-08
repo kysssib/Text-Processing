@@ -12,12 +12,16 @@
     7. [TF-IDF벡터/코사인 유사도/정규화](#7-tf-idf-벡터)
     8. [사이킷런](#8-사이킷런-활용)
     </details>
+
 - <details><summary>기말</summary>
 
     9. [정규표현식](#9-정규표현식regular-expression)
     10. [형태소 분석](#10-형태소-분석)
     11. [동시발생행렬](#11-동시발생행렬)
     12. [CBOW](#12-cbow)
+    13. [TMDB 실습](#13-tmdb-실습)
+    14. [네이버 영화 실습](#14-네이버-영화-실습)
+    15. [사전 임베딩 자료 실습](#15-사전-임베딩-자료-실습)
     </details>
 
 ---
@@ -1652,7 +1656,7 @@ express : ^\(0.+9\)$
 ---
 
 ## 13. TMDB 실습
-<!-- <details> -->
+<details>
 
 1. 데이터 전처리
     - 드라이브 마운트, 불러오기 및 null행 삭제
@@ -1779,9 +1783,471 @@ express : ^\(0.+9\)$
     (5549, 100)
     ```
 
+- KeyedVectors 활용
+
+    <details>
+    <summary>most_similar</summary>
+
+    ```python
+    result = wv.most_similar(positive=['action', 'man'], negative=['woman'])
+    most_similar_key, similarity = result[0]
+    print(f"{most_similar_key}: {similarity:.4f}")
+
+    ###출력결과
+    secret: 0.9910
+    ```
+    </details>
+
+    <details>
+    <summary>similar_by_word</summary>
+
+    ```python
+    result = wv.similar_by_word("man")
+    most_similar_key, similarity = result[0]
+    print(f"{most_similar_key}: {similarity:.4f}")
+
+    ###출력결과
+    woman: 0.9862
+    ```
+    man과 유사한 단어로 woman이 나옴
+    </details>
+
+    <details>
+    <summary>wmdistance,distance</summary>
+
+    ```python
+    batman = 'action movie is very fun and easy'.lower().split()
+    action = 'action movie is very fun and easy'.lower().split()
+    distance = wv.wmdistance(batman, action)
+    print(f"{distance:.4f}")
+
+    ###출력결과
+    0.0000
+    ```
+    두 문장의 거리를 계산한다<br>
+    거리가 낮을수록 유사하다
+    
+    ```python
+    distance = wv.distance("batman", "batman")
+    print(f"{distance:.1f}")
+
+    ###출력결과
+    0.0
+    ```
+    위와 다른 점은 단어 사이의 거리를 계산한다.
+    </details>
+
+    <details>
+    <summary>n_similarity</summary>
+
+    ```python
+    similarity = wv.n_similarity(['action', 'batman'], ['romance', 'comic'])
+    print(f"{similarity:.4f}")
+
+    ###출력결과
+    0.9992
+    ```
+    여러 단어의 유사도를 계산한다
+    </details>
 
 
 
+</details>
+
+<div style="text-align: right">
+
+[목차](#목차)
+</div>
+
+---
+
+## 14. 네이버 영화 실습
+<details>
+
+- 영화 자료는 [여기서](#https://github.com/e9t/nsmc) 가지고 온다
+
+1. 데이터 로딩과 전처리
+    ```python
+    #구글드라이브 마운트
+    from google.colab import drive
+    import os
+    drive.mount('/content/drive') #구글드라이브 마운트 위치
+
+    import pandas as pd
+    #구글 드라이브 내 다운로드 받은 무비데이터 파일의 디렉토리 위치 설정
+    path_dir = './drive/MyDrive/Colab Notebooks/sampledata/' 
+    file = path_dir+'ratings.txt'  #https://github.com/e9t/nsmc에서 다운로드
+
+    data = pd.read_table(file)
+
+    print(data.shape)
+    print(data.head(5))
+    data = data.dropna(how = 'any') # 빈 행(NULL값) 제거
+    print(data.shape)
+
+    ###출력결과
+    (200000, 3)
+            id                                           document  label
+    0   8112052                                어릴때보고 지금다시봐도 재밌어요ㅋㅋ      1
+    1   8132799  디자인을 배우는 학생으로, 외국디자이너와 그들이 일군 전통을 통해 발전해가는 문화산...      1
+    2   4655635               폴리스스토리 시리즈는 1부터 뉴까지 버릴께 하나도 없음.. 최고.      1
+    3   9251303  와.. 연기가 진짜 개쩔구나.. 지루할거라고 생각했는데 몰입해서 봤다.. 그래 이런...      1
+    4  10067386                        안개 자욱한 밤하늘에 떠 있는 초승달 같은 영화.      1
+    (199992, 3)
+    ```
+2. 형태소 분석
+    ```python
+    !curl -s https://raw.githubusercontent.com/teddylee777/machine-learning/master/99-Misc/01-Colab/mecab-colab.sh | bash
+    ```
+    해당 코드 입력 후 불용어 파일을 로딩해 불용어 리스트에 저장
+
+    ```python
+    #불용어 로딩
+    file = path_dir+'kstopwords100.txt' #불용어 처리 파일
+
+    stopwords = pd.read_table(file, header=None)
+    print(stopwords[:5])
+    stopwords = stopwords[:][0].to_list()
+
+    len(stopwords)
+
+    ###출력결과
+    0    1         2
+    0  이  VCP  0.018280
+    1  있   VA  0.011699
+    2  하   VV  0.009774
+    3  것  NNB  0.009733
+    4  들  XSN  0.006898
+    100
+    ```
+    후에 형태소 분석기 호출
+    ```python
+    from konlpy.tag import Okt
+
+    okt = Okt()
+    tokenized_data = []
+    for sentence in data['document']:
+        tok_sent = okt.morphs(sentence, stem=True) # 토큰화
+        stopwords_removed_sent = [word for word in tok_sent if not word in stopwords] # 불용어 제거
+        tokenized_data.append(stopwords_removed_sent)
+    
+    #형태소분석기과정 거친 자료 피클로 저장
+    import pickle
+
+    with open(path_dir+"naver_mv_tokenized_data.pickle","wb") as f:
+        pickle.dump(tokenized_data, f)
+
+    
+    ```
+
+3. 분석 파일 로드 후 Word2Vec 실습
+    ```python
+    #피클 파일 불러오기
+    import pickle
+
+    path_dir = './drive/MyDrive/Colab Notebooks/sampledata/'
+
+    with open(path_dir+"naver_mv_tokenized_data.pickle","rb") as f:
+        tokenized_data = pickle.load(f)
+
+    #리뷰데이터 분포
+    print('리뷰의 최대 길이 :',max(len(d) for d in tokenized_data))
+    print('리뷰의 평균 길이 :',sum(map(len, tokenized_data))/len(tokenized_data))
+
+    import matplotlib.pyplot as plt
+
+    plt.hist([len(d) for d in tokenized_data], bins=50)
+    plt.xlabel('length of samples')
+    plt.ylabel('number of samples')
+    plt.show()
+
+    ##출력결과
+    [['어리다', '보고', '보다', '재밌다', 'ㅋㅋ'], 
+    ['디자인', '을', '배우다', '학생', '으로', ',', '외국', '디자이너', '와', '일군', '전통', '을', '통해', '발전', '하다', '문화', '산업', '부럽다', '.', '우리나라', '에서도', '어렵다', '시절', '에', '끝', '까지', '열정', '을', '지키다', '노라노', '같다', '전통', '있다', '저', '와', '같다', '꿈', '을', '꾸다', '이루다', '나가다', '있다', '에', '감사하다', '.'],
+    ['폴리스스토리', '시리즈', '는', '1', '부터', '뉴', '까지', '버리다', '도', '없다', '..', '최고', '.']]
+    ```
+    ![image](https://github.com/kysssib/Text-Processing/assets/113497500/73dd2762-5b30-4a3c-b4c2-9a33cd796b1e)
+    
+    가로 : 샘플의 길이<br>
+    세로 : 해당 샘플의 숫자
+
+    모델 구축
+    ```python
+    from gensim.models import Word2Vec
+    from gensim.models import KeyedVectors
+
+    model = Word2Vec(sentences=tokenized_data,
+                    vector_size=100, window=5, min_count=5,
+                    workers=4, sg=1)
+    
+    #단어수 확인
+    model.wv.vectors.shape
+
+    ###출력결과
+    (17564, 100)
+    ```
+4. 모델 활용
+    <details><summary>most_similar</summary>
+    
+    ```python
+    model_result = model.wv.most_similar("정우성")
+    print(model_result)
+
+    ###출력결과
+    [('황정민', 0.8435378074645996), ('송혜교', 0.8388928174972534), 
+    ('장혁', 0.8372812271118164), ('정재영', 0.8354607820510864), 
+    ('원빈', 0.8349665403366089), ('남상미', 0.8325139880180359), 
+    ('이민정', 0.8314265608787537), ('심은경', 0.8306748867034912), 
+    ('김창완', 0.8292453289031982), ('이범수', 0.8287127017974854)]
+
+    ##아래 출력결과는 CBOW로 진행한 모델로 정우성을 검색해본 내용입니다.
+    [('김혜수', 0.8736814856529236), ('주상욱', 0.8694123029708862),
+    ('이종석', 0.858771800994873), ('장혁', 0.8580711483955383), 
+    ('송승헌', 0.8483266830444336), ('정재영', 0.8478938341140747), 
+    ('하지원', 0.8471293449401855), ('임수정', 0.8444806337356567), 
+    ('손예진', 0.8371105790138245), ('공효진', 0.8356135487556458)]
+
+    model_result = model.wv.most_similar("액션")
+    print(model_result)
+
+    ###출력결과
+    [('액션씬', 0.7664161920547485), ('격투', 0.7317063212394714), 
+    ('격투씬', 0.7102022171020508), ('총격', 0.7101128697395325), 
+    ('무협', 0.7076876163482666), ('레이싱', 0.7047789096832275), 
+    ('무술', 0.6988150477409363), ('첩보', 0.6942819356918335), 
+    ('추격', 0.6899939775466919), ('코메', 0.6888874769210815)]
+
+    ##아래 출력결과는 CBOW로 진행한 모델로 액션을 검색해본 내용입니다
+    [('스케일', 0.7097840309143066), ('코믹', 0.6931434869766235), 
+    ('액션씬', 0.6928027868270874), ('볼거리', 0.6472076177597046), 
+    ('긴장감', 0.6425592303276062), ('화끈하다', 0.6276863217353821), 
+    ('그래픽', 0.6182790994644165), ('무술', 0.6093198657035828), 
+    ('화려하다', 0.6072039008140564), ('스릴러', 0.6064084768295288)]
+    ```
+    Skip-Gram으로 학습한 모델의 테스트
+    </details>
+    <details><summary>KeyedVectors : save_word2vec_format & load_word2vec_format</summary>
+    
+    ```python
+    w2v_vectors = path_dir+'naver_w2v'
+    model.wv.save_word2vec_format(w2v_vectors) # 모델 저장
+    wv = KeyedVectors.load_word2vec_format(w2v_vectors) # 모델 로드
+    print(type(wv))
+
+    result = wv.most_similar("한석규")
+    print(result)
+
+    ###출력결과
+    gensim.models.keyedvectors.Word2VecKeyedVectors
+
+    [('엄정화', 0.850074291229248), ('김명민', 0.8498216867446899), 
+    ('디카프리오', 0.8420839905738831), ('문소리', 0.8418601155281067), 
+    ('안성기', 0.841203510761261), ('신들리다', 0.8388416767120361), 
+    ('전도연', 0.8387709259986877), ('설경구', 0.8325169682502747), 
+    ('공리', 0.8314179182052612), ('차승원', 0.8303262591362)]
+    ```
+    여기에서 활용된 벡터 저장 방식은 save()와 load()를 사용하지 않음
+    
+    save, load 함수는 KeyedVectors 객체 자체를 저장하고 로딩하여 추가학습 등을 진행할 수 있는 반면, 여기서 사용한 save_word2vec_format과 load_word2vec_format은 ‘original C word2vec-tool format’으로 저장되어 추가학습 등을 진행할 수 없는 포멧
+
+    출력결과를 살펴보면 wv가 Word2VecKeyedVectors인 것을 확인할 수 있다.
+    </details>
+
+</details>
+
+<div style="text-align: right">
+
+[목차](#목차)
+</div>
+
+---
+
+## 15. 사전 임베딩 자료 실습
+<details>
+
+1. 영어 사전학습 word2vec 임베딩 로딩
+
+    자료는 [여기서](#https://code.google.com/archive/p/word2vec/) 가져온다
+
+    ```python
+    from gensim.models import KeyedVectors
+
+    w2v_eng_model = KeyedVectors.load_word2vec_format
+        ('GoogleNews-vectors-negative300.bin.gz', binary=True)
+
+    print(w2v_eng_model.vectors.shape)
+
+    ##출력
+    (3000000, 300)
+    ```
+
+2. 한글 사전학습 word2vec 임베딩
+
+    자료는 [여기서](#https://github.com/Kyubyong/wordvectors) 가져온다<br>
+    약 30개국 언어의 임베딩 자료를 구할 수 있다
+
+    ```python
+    from gensim.models.word2vec import Word2Vec
+    import numpy
+
+    w2v_kor_model = Word2Vec.load('ko.bin')
+    ```
+
+3. Naver 영화평 벡터 활용하기
+
+    - 구글 드라이브 마운트와 네이버 영화평 임베딩 벡터 로딩
+        ```python
+        from google.colab import drive
+        import os
+        drive.mount('/content/drive') #구글드라이브 마운트 위치
+        #구글 드라이브 내 모델 데이터 위치 설정
+        path_dir = './drive/MyDrive/Colab Notebooks/sampledata/'
+
+        from gensim.models import Word2Vec
+        from gensim.models import KeyedVectors
+
+        w2v_vectors = path_dir+'naver_w2v'
+        wv = KeyedVectors.load_word2vec_format(w2v_vectors) # 모델 로드
+
+        print(wv.vectors.shape)
+
+        ### 출력결과
+        (17564, 100)
+        ```
+
+    - 임베딩 벡터 활용
+
+        형태소분석기 및 불용어 로딩
+        ```python
+        !curl -s https://raw.githubusercontent.com/teddylee777/machine-learning/master/99-Misc/01-Colab/mecab-colab.sh | bash
+        ```
+        ```python
+        import pandas as pd
+
+        #불용어 로딩
+        file = path_dir+'kstopwords100.txt' 
+
+        stopwords = pd.read_table(file, header=None)
+        print(stopwords[:5])
+        stopwords = stopwords[:][0].to_list()
+
+        len(stopwords)
+
+        ###출력결과
+        0    1         2
+        0  이  VCP  0.018280
+        1  있   VA  0.011699
+        2  하   VV  0.009774
+        3  것  NNB  0.009733
+        4  들  XSN  0.006898
+        100
+        ```
+        샘플 문서 형태소 분석 해당 sentence변수에 든 문장은 임의 문장이다
+        ```python
+        sentence = ['베테랑이 제일 재미있었다.', '황정민 연기는 정말 끝내준다', '새로나온 재미있는 영화 없나?',
+                    '우리나라에서 이런 영화를 만들줄 몰랐다.', '연기 못하는 배우도 잘나가는구나']
+                    
+        from konlpy.tag import Okt
+
+        okt = Okt()
+        tokenized_data = []
+        for sent in sentence:
+            tok_sent = okt.morphs(sent, stem=True) # 토큰화
+            stopwords_removed_sent = [word for word in tok_sent if not word in stopwords]
+            tokenized_data.append(stopwords_removed_sent)
+
+        print(tokenized_data)
+
+        ### 출력결과
+        [['베테', '랑', '제일', '재미있다', '.'], 
+        ['황정민', '연기', '는', '정말', '끝내다'], 
+        ['새롭다', '나오다', '재미있다', '영화', '없다', '?'], 
+        ['우리나라', '에서', '이렇다', '영화', '를', '만들다', '모르다', '.'], 
+        ['연기', '못', '하다', '배우다', '잘나가다']]
+        ```
+        케라스를 활용한 토크나이저 및 사전 구축
+        ```python
+        import numpy as np
+        from keras.preprocessing.text import Tokenizer
+
+        tokenizer = Tokenizer()
+        tokenizer.fit_on_texts(tokenized_data)
+
+        vocab_size = len(tokenizer.word_index) + 1
+        print('단어 개수 :',vocab_size)
+        print(tokenizer.word_index)
+
+        ###출력결과
+        단어 개수 : 26
+        {'재미있다': 1, '.': 2, '연기': 3, '영화': 4, '베테': 5, '랑': 6, '제일': 7, '황정민': 8, 
+        '는': 9, '정말': 10, '끝내다': 11, '새롭다': 12, '나오다': 13, '없다': 14, '?': 15, 
+        '우리나라': 16, '에서': 17, '이렇다': 18, '를': 19, '만들다': 20, '모르다': 21, '못': 22,
+        '하다': 23, '배우다': 24, '잘나가다': 25}
+        ```
+        단어 임베딩 만들기
+        ```python
+        embedding_vec = np.zeros((vocab_size, 100)) #네이버 단어임베딩 벡터 길이 100
+        print(np.shape(embedding_vec))
+
+        ###출력결과
+        (26, 100)
+        ```
+        wv에서 임베딩 자료를 가져올 함수 생성(함수는 해당 단어의 임베딩 벡터를 반환, 없으면 None)
+        ```python
+        def get_vector(word):
+            if word in wv:
+                return wv[word]
+            else:
+                return None
+        #사용법
+        for word, index in tokenizer.word_index.items():
+            vector = get_vector(word)
+            if vector is not None:
+                embedding_vec[index] = vector
+        print(embedding_vec[1])
+
+        ###출력결과
+        [-0.90842527  0.24096963  0.07952304 -0.07481565 -0.23117378 -0.45360285
+        -0.02481424  0.04972698  0.29619971  0.33146238 -0.38025373 -0.12967564
+        -0.17546327 -0.1940318   0.11065004 -0.46046361 -0.09199833 -0.37428865
+        -0.70732927  0.23981455  0.2995061   0.06040657 -0.02012163 -0.06818607
+        0.00870245  0.02101303  0.01328442 -0.03182668  0.01928779  0.13133152
+        -0.26575708  0.03603864 -0.23061009  0.29820696  0.31748411  0.21167077
+        -0.02976821 -0.11636379  0.17527997 -0.29821178 -0.03002749 -0.38743222
+        -0.44537312 -0.37033185 -0.06709219  0.1261839   0.15775077  0.4391903
+        -0.00690586 -0.24710579 -0.54626775  0.01758383 -0.07784662  0.36384881
+        0.26519459 -0.34380242  0.04659332  0.22215968  0.04436301 -0.65513325
+        -0.10668164 -0.52401096 -0.32037759 -0.06596681 -0.10190149 -0.07385413
+        -0.10744798  0.4143092  -0.00781951  0.39623666 -0.29232049  0.25385565
+        0.50013185  0.47848335 -0.00569391 -0.04954932 -0.04758142  0.14865264
+        0.1752449   0.25221092 -0.0458079   0.27935067 -0.05026009  0.17818071
+        -0.29584485 -0.16940355  0.18712966  0.245657   -0.29228112  0.38417351
+        0.24896795  0.37891448  0.44761166  0.13117118  0.17999749 -0.02614649
+        -0.58532465 -0.15918075  0.1183216   0.28335199]
+        ```
+        해당 벡터가 네이버 모델과 비슷한지 비교함
+        ```python
+        print(wv['재미있다'])
+
+        ###출력결과
+        [-0.9084253   0.24096963  0.07952304 -0.07481565 -0.23117378 -0.45360285
+        -0.02481424  0.04972698  0.2961997   0.33146238 -0.38025373 -0.12967564
+        -0.17546327 -0.1940318   0.11065004 -0.4604636  -0.09199833 -0.37428865
+        -0.7073293   0.23981455  0.2995061   0.06040657 -0.02012163 -0.06818607
+        0.00870245  0.02101303  0.01328442 -0.03182668  0.01928779  0.13133152
+        -0.26575708  0.03603864 -0.23061009  0.29820696  0.3174841   0.21167077
+        -0.02976821 -0.11636379  0.17527997 -0.29821178 -0.03002749 -0.38743222
+        -0.44537312 -0.37033185 -0.06709219  0.1261839   0.15775077  0.4391903
+        -0.00690586 -0.24710579 -0.54626775  0.01758383 -0.07784662  0.3638488
+        0.2651946  -0.34380242  0.04659332  0.22215968  0.04436301 -0.65513325
+        -0.10668164 -0.52401096 -0.3203776  -0.06596681 -0.10190149 -0.07385413
+        -0.10744798  0.4143092  -0.00781951  0.39623666 -0.2923205   0.25385565
+        0.50013185  0.47848335 -0.00569391 -0.04954932 -0.04758142  0.14865264
+        0.1752449   0.25221092 -0.0458079   0.27935067 -0.05026009  0.17818071
+        -0.29584485 -0.16940355  0.18712966  0.245657   -0.29228112  0.3841735
+        0.24896795  0.37891448  0.44761166  0.13117118  0.17999749 -0.02614649
+        -0.58532465 -0.15918075  0.1183216   0.283352  ]
+        ```
 </details>
 
 <div style="text-align: right">
