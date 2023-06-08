@@ -1864,7 +1864,7 @@ express : ^\(0.+9\)$
 ## 14. 네이버 영화 실습
 <details>
 
-- 영화 자료는 [여기서](#https://github.com/e9t/nsmc) 가지고 온다
+- 영화 자료는 [여기서](#https://github.com/e9t/nsmc)(https://github.com/e9t/nsmc) 가지고 온다
 
 1. 데이터 로딩과 전처리
     ```python
@@ -2067,7 +2067,7 @@ express : ^\(0.+9\)$
 
 1. 영어 사전학습 word2vec 임베딩 로딩
 
-    자료는 [여기서](#https://code.google.com/archive/p/word2vec/) 가져온다
+    자료는 [여기서](#https://code.google.com/archive/p/word2vec/)(https://code.google.com/archive/p/word2vec/) 가져온다
 
     ```python
     from gensim.models import KeyedVectors
@@ -2083,7 +2083,7 @@ express : ^\(0.+9\)$
 
 2. 한글 사전학습 word2vec 임베딩
 
-    자료는 [여기서](#https://github.com/Kyubyong/wordvectors) 가져온다<br>
+    자료는 [여기서](#https://github.com/Kyubyong/wordvectors)(https://github.com/Kyubyong/wordvectors) 가져온다<br>
     약 30개국 언어의 임베딩 자료를 구할 수 있다
 
     ```python
