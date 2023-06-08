@@ -1511,8 +1511,8 @@ express : ^\(0.+9\)$
             |h4|$x_{4}$|...|...|...|...|...|...|
         - 출력리스트 = [out1, out2, out3, out4, out5, out6, out7]
         - $score = h\times W_{out}$
-        - $out1 = (h1\times W_{out1}|h1) + $<br>$(h2\times W_{out1}|h2) + $<br>$(h3\times W_{out1}|h3) + $<br>$(h4\times W_{out1}|h4)$
-        - $= (0.6\times x_{1}) + (0.7\times x_{2}) + (1.7\times x_{3}) + (0.7\times x_{4})  = 0.7$
+        - $out1 = (h1\times W_{out1}|h1) + $<br>    $(h2\times W_{out1}|h2) + $<br>     $(h3\times W_{out1}|h3) + $<br>    $(h4\times W_{out1}|h4)$
+        - $= (0.6\times x_{1}) + $<br>    $(0.7\times x_{2}) + $<br>    $(1.7\times x_{3}) + $<br>    $(0.7\times x_{4})  = 0.7$
         - 가중치 결과값 = [0.7, 1.8, 3.2, 0.9, 0.8, 0.1, 0.1]
         - 실제 타겟 값 = [0, 0, 1, 0, 0, 0, 0]
         - 각각 대조 비교
